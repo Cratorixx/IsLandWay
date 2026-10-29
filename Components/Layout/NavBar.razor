@@ -1,0 +1,64 @@
+<!-- 1. Sticky Navigation (80px) -->
+<header class="sticky top-0 z-50 w-full backdrop-blur-md bg-[#06182a]/80 md:bg-white/10 border-b border-white/20 shadow-xs">
+    <div class="w-full h-[80px] px-6 sm:px-12 lg:px-[72px] flex items-center justify-between">
+        <a class="flex items-center gap-[10px] no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3] rounded-lg" href="/">
+            <div class="w-[40px] h-[40px] bg-gradient-to-br from-[#00c9b4] to-[#008f80] rounded-[10px] flex items-center justify-center text-white text-[18px] shadow-[0_4px_14px_rgba(0,168,150,0.35)] ring-1 ring-white/40">
+                <i class="fa-solid fa-ship"></i>
+            </div>
+            <div class="flex flex-col justify-center">
+                <span class="font-bold text-[22px] leading-[26px] text-white tracking-tight">Islandway</span>
+                <span class="font-semibold text-[9px] leading-[11px] text-[#7FE0D3] uppercase tracking-wider">Transit Guide</span>
+            </div>
+        </a>
+
+        <nav aria-label="Main Navigation" class="flex items-center gap-4 md:gap-[36px]">
+            <NavLink href="" Match="NavLinkMatch.All" class="hidden md:inline-block text-[14px] leading-[17px] font-medium text-white/90 hover:text-[#7FE0D3] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3] rounded py-1" ActiveClass="font-semibold !text-[#7FE0D3] border-b-2 border-[#7FE0D3]">
+                Home
+            </NavLink>
+            <NavLink href="routes" Match="NavLinkMatch.Prefix" class="hidden md:inline-block text-[14px] leading-[17px] font-medium text-white/90 hover:text-[#7FE0D3] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3] rounded py-1" ActiveClass="font-semibold !text-[#7FE0D3] border-b-2 border-[#7FE0D3]">
+                Routes &amp; Ports
+            </NavLink>
+            <NavLink href="walkthrough" Match="NavLinkMatch.Prefix" class="hidden md:inline-block text-[14px] leading-[17px] font-medium text-white/90 hover:text-[#7FE0D3] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3] rounded py-1" ActiveClass="font-semibold !text-[#7FE0D3] border-b-2 border-[#7FE0D3]">
+                Travel Guide
+            </NavLink>
+            <a class="hidden lg:inline-block text-[14px] leading-[17px] font-medium text-white/90 hover:text-[#7FE0D3] transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3] rounded" href="/#vessels">
+                Vessel Classes
+            </a>
+            <a href="/routes" class="h-[42px] px-[20px] bg-gradient-to-r from-[#00c9b4] to-[#00A896] hover:from-[#00b9a5] hover:to-[#007f71] transition-all duration-200 rounded-full flex items-center justify-center text-[#071F36] font-bold text-[13px] sm:text-[14px] leading-[17px] shadow-[0_6px_20px_rgba(0,168,150,0.35)] border border-white/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+                Find Crossing
+            </a>
+            <button type="button"
+                    @onclick="ToggleMobileMenu"
+                    aria-label="Toggle navigation menu"
+                    class="md:hidden w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-white hover:text-[#7FE0D3] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+                <i class="fa-solid @(IsMobileMenuOpen ? "fa-xmark" : "fa-bars") text-base"></i>
+            </button>
+        </nav>
+    </div>
+
+    @if (IsMobileMenuOpen)
+    {
+        <div class="md:hidden px-6 pb-5 pt-2 bg-[#06182a]/95 backdrop-blur-xl border-t border-white/10 flex flex-col gap-3">
+            <NavLink href="" Match="NavLinkMatch.All" @onclick="CloseMobileMenu" class="text-sm font-medium text-white/90 hover:text-[#7FE0D3] py-1.5" ActiveClass="font-bold !text-[#7FE0D3]">
+                Home
+            </NavLink>
+            <NavLink href="routes" Match="NavLinkMatch.Prefix" @onclick="CloseMobileMenu" class="text-sm font-medium text-white/90 hover:text-[#7FE0D3] py-1.5" ActiveClass="font-bold !text-[#7FE0D3]">
+                Routes &amp; Ports
+            </NavLink>
+            <NavLink href="walkthrough" Match="NavLinkMatch.Prefix" @onclick="CloseMobileMenu" class="text-sm font-medium text-white/90 hover:text-[#7FE0D3] py-1.5" ActiveClass="font-bold !text-[#7FE0D3]">
+                Pier-to-Pier Travel Guide
+            </NavLink>
+            <a href="/#vessels" @onclick="CloseMobileMenu" class="text-sm font-medium text-white/90 hover:text-[#7FE0D3] py-1.5">
+                Vessel Classes
+            </a>
+        </div>
+    }
+</header>
+
+@code {
+    private bool IsMobileMenuOpen { get; set; }
+
+    private void ToggleMobileMenu() => IsMobileMenuOpen = !IsMobileMenuOpen;
+
+    private void CloseMobileMenu() => IsMobileMenuOpen = false;
+}

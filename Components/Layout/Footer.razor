@@ -1,0 +1,111 @@
+@inject ITransitService TransitService
+
+<!-- 5. Safety Resources & Footer (Dark frosted glass styling) -->
+<footer class="w-full bg-[#071F36]/90 backdrop-blur-2xl px-6 sm:px-12 lg:px-[72px] pt-[40px] pb-[28px] flex flex-col gap-[34px] text-white border-t border-white/10" id="safety">
+    <div class="max-w-[1440px] mx-auto flex flex-col gap-[34px] w-full">
+        <!-- Weather Advisory Status Banner -->
+        @if (Advisory != null)
+        {
+            <div class="w-full bg-slate-900/60 backdrop-blur-xl border border-white/15 rounded-2xl p-[18px_22px] flex flex-col sm:flex-row sm:items-center gap-[16px] shadow-[0_8px_32px_rgba(0,0,0,0.25)]">
+                <div class="w-[42px] h-[42px] rounded-full bg-white/10 backdrop-blur-sm border border-white/15 flex items-center justify-center text-[#73DED0] text-[20px] flex-shrink-0">
+                    <i class="fa-solid fa-cloud-sun"></i>
+                </div>
+                <div class="flex flex-col gap-[6px] flex-1">
+                    <div class="flex flex-wrap items-center gap-[12px]">
+                        <h4 class="text-[15px] font-semibold text-white">@Advisory.DisplayTitle</h4>
+                        <span class="bg-[#F4E4C9]/90 backdrop-blur-xs text-[#795520] text-[9px] font-bold uppercase tracking-wider px-[8px] py-[3px] rounded-md border border-amber-200/50">
+                            @Advisory.StatusBadge
+                        </span>
+                    </div>
+                    <p class="text-[12px] text-[#BBCBD7] leading-[150%]">
+                        @Advisory.Summary
+                    </p>
+                </div>
+                <a class="flex items-center gap-[6px] text-[12px] font-semibold text-[#7FE0D3] hover:text-[#a0ece2] transition-colors duration-150 flex-shrink-0 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 backdrop-blur-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]" href="@Advisory.RadarUrl" target="_blank" rel="noopener noreferrer">
+                    <span>Live PAGASA radar</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                </a>
+            </div>
+        }
+
+        <!-- Footer Columns (4 Columns) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[48px] w-full pt-2">
+            <!-- Col 1: About Islandway -->
+            <div class="flex flex-col gap-[16px]">
+                <div class="flex items-center gap-[10px]">
+                    <div class="w-[36px] h-[36px] bg-gradient-to-br from-[#00A896] to-[#007D72] rounded-[10px] flex items-center justify-center text-white text-[17px] shadow-sm ring-1 ring-white/20">
+                        <i class="fa-solid fa-ship"></i>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="font-bold text-[20px] leading-[24px] text-white tracking-tight">Islandway</span>
+                        <span class="font-semibold text-[9px] leading-[11px] text-[#BBCBD7] uppercase tracking-wider">Transit Guide</span>
+                    </div>
+                </div>
+                <p class="text-[13px] leading-[180%] text-[#BBCBD7]">
+                    Independent open transit information service for inter-island commuters, domestic travelers, and vehicle transport across the Philippines.
+                </p>
+                <div class="flex items-center gap-[8px] text-[12px] text-[#BBCBD7]">
+                    <i class="fa-solid fa-map-pin text-[#7FE0D3]"></i>
+                    <span>Central Visayas &amp; Philippine Archipelagic Waters</span>
+                </div>
+            </div>
+
+            <!-- Col 2: Major Sea Lanes -->
+            <div class="flex flex-col gap-[14px]">
+                <h4 class="text-[13px] font-semibold text-white uppercase tracking-wider">Major Sea Lanes</h4>
+                <ul class="flex flex-col gap-[10px] text-[12px] text-[#BBCBD7] list-none p-0 m-0">
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/routes/cebu-bohol">Cebu ➔ Tagbilaran (Bohol)</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/routes/cebu-ormoc">Cebu ➔ Ormoc (Leyte)</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/routes/dumaguete-siquijor">Dumaguete ➔ Siquijor Island</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/routes/batangas-caticlan">Batangas ➔ Caticlan (Boracay)</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/routes/iloilo-bacolod">Iloilo ➔ Bacolod (Guimaras Strait)</a></li>
+                </ul>
+            </div>
+
+            <!-- Col 3: Traveler Resources -->
+            <div class="flex flex-col gap-[14px]">
+                <h4 class="text-[13px] font-semibold text-white uppercase tracking-wider">Traveler Resources</h4>
+                <ul class="flex flex-col gap-[10px] text-[12px] text-[#BBCBD7] list-none p-0 m-0">
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/walkthrough#step-03-terminal-fee">Terminal Fee Directory</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/#vessels">Rolling Cargo (Ro-Ro) Guidelines</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/routes/cebu-bohol#timetables">Senior &amp; PWD Discounts (20%)</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/walkthrough#step-01-security">Security &amp; Prohibited Items</a></li>
+                    <li><a class="hover:text-[#7FE0D3] transition-colors duration-150" href="/walkthrough#step-04-luggage">Luggage Allowance Rules</a></li>
+                </ul>
+            </div>
+
+            <!-- Col 4: Coast Guard Emergency & Maritime Safety -->
+            <div class="flex flex-col gap-[14px]">
+                <div class="flex items-center gap-[8px]">
+                    <i class="fa-solid fa-life-ring text-[#7FE0D3] text-[16px]"></i>
+                    <h4 class="text-[13px] font-semibold text-white uppercase tracking-wider">Coast Guard &amp; Safety</h4>
+                </div>
+                <p class="text-[12px] leading-[175%] text-[#BBCBD7]">
+                    Always verify sea trip advisories with the Philippine Coast Guard (PCG) during typhoon signals and monsoon surges before proceeding to ports.
+                </p>
+                <a class="flex items-center gap-[6px] text-[12px] font-semibold text-[#7FE0D3] hover:text-white transition-colors duration-150 mt-[2px]" href="https://coastguard.gov.ph" rel="noopener noreferrer" target="_blank">
+                    <span>Official PCG Portal</span>
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="w-full h-[1px] bg-white/10"></div>
+
+        <!-- Legal & Data Notice -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] text-[#BBCBD7]/90">
+            <span>© 2025 Islandway Maritime Transit Guide. Public interest navigation reference.</span>
+            <span>Not affiliated with individual vessel shipping lines. Schedules subject to port clearance.</span>
+        </div>
+    </div>
+</footer>
+
+@code {
+    private WeatherAdvisory? Advisory { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Advisory = await TransitService.GetCurrentWeatherAdvisoryAsync();
+    }
+}

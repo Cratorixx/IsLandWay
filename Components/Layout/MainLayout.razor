@@ -1,0 +1,20 @@
+@inherits LayoutComponentBase
+
+<!-- Ambient Coastal Glows & Light Orbs for Glass Refraction -->
+<div class="fixed top-[-100px] left-[-150px] w-[650px] h-[650px] bg-teal-500/15 rounded-full blur-[140px] pointer-events-none -z-10"></div>
+<div class="fixed top-[45%] right-[-150px] w-[700px] h-[700px] bg-[#00A896]/15 rounded-full blur-[160px] pointer-events-none -z-10"></div>
+<div class="fixed bottom-[-100px] left-[20%] w-[800px] h-[600px] bg-sky-600/15 rounded-full blur-[170px] pointer-events-none -z-10"></div>
+
+<!-- Main Container -->
+<div class="w-full min-h-dvh flex flex-col relative bg-transparent">
+    <!-- 1. Sticky Navigation (80px) -->
+    <NavBar />
+
+    <!-- Main Page Content -->
+    <main class="flex-1 w-full">
+        @Body
+    </main>
+
+    <!-- 5. Safety Resources & Footer -->
+    <Footer />
+</div>

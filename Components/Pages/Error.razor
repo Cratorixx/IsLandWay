@@ -1,0 +1,42 @@
+@page "/Error"
+@using System.Diagnostics
+
+<PageTitle>Navigation Advisory — Error | Islandway</PageTitle>
+
+<div class="px-6 py-16 max-w-2xl mx-auto">
+    <div class="glass-card rounded-2xl p-8 text-white space-y-4 shadow-xl">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-bold uppercase tracking-wider">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <span>Navigation Notice</span>
+        </div>
+        <h1 class="text-2xl sm:text-3xl font-bold text-white">Unable to complete your request.</h1>
+        <p class="text-sm text-slate-200 leading-relaxed">
+            An unexpected issue occurred while loading this maritime passage. Please return to the main route finder or select another corridor.
+        </p>
+
+        @if (ShowRequestId)
+        {
+            <p class="text-xs text-slate-300 font-mono bg-slate-900/60 px-3 py-2 rounded-lg border border-white/10">
+                <strong class="text-[#7FE0D3]">Request ID:</strong> <code>@RequestId</code>
+            </p>
+        }
+
+        <div class="pt-3">
+            <a href="/" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#00c9b4] to-[#00A896] text-[#071F36] text-xs font-bold shadow-md hover:brightness-110 transition-all">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span>Return to Home Port</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+@code {
+    [CascadingParameter]
+    private HttpContext? HttpContext { get; set; }
+
+    private string? RequestId { get; set; }
+    private bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+
+    protected override void OnInitialized() =>
+        RequestId = Activity.Current?.Id ?? HttpContext?.TraceIdentifier;
+}
