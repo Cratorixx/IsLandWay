@@ -1,0 +1,31 @@
+@if (Vehicle != null)
+{
+    <div class="glass-card rounded-2xl p-6 shadow-xl flex flex-col justify-between hover:bg-white/[0.11] transition-all group text-white">
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-[10px] font-bold tracking-widest uppercase @Vehicle.GetCategoryBadgeClasses() px-3 py-1 rounded-full">
+                    @Vehicle.CategoryBadgeText
+                </span>
+                <div class="w-9 h-9 rounded-full @Vehicle.GetIconCircleClasses() flex items-center justify-center shadow-sm">
+                    <span class="material-symbols-outlined text-[19px]">@Vehicle.MaterialIconName</span>
+                </div>
+            </div>
+            <h3 class="text-[20px] font-bold text-white mb-1">@Vehicle.DisplayTitle</h3>
+            <div class="flex items-baseline gap-1 mb-3">
+                <span class="text-[26px] font-bold text-teal-300">@Vehicle.FareRangeText</span>
+                <span class="text-[13px] text-slate-300">@Vehicle.FareUnitText</span>
+            </div>
+            <p class="text-[13px] leading-relaxed text-slate-200 mb-4">
+                @Vehicle.Description
+            </p>
+        </div>
+        <div class="pt-4 border-t border-white/10 text-[12px] text-slate-300">
+            @Vehicle.DispatchAdviceText
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public LastMileTransitBase? Vehicle { get; set; }
+}

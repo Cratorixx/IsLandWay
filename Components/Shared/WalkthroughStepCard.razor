@@ -1,0 +1,84 @@
+@if (Step != null)
+{
+    <div id="@Step.Id"
+         class="glass-card p-6 lg:p-8 rounded-2xl shadow-xl transition-all hover:bg-white/[0.09] flex flex-col lg:flex-row items-stretch justify-between gap-6 @(IsHighlighted ? "border-[#46E5D1] ring-2 ring-[#46E5D1]/30 shadow-[0_0_20px_rgba(70,229,209,0.15)]" : "")">
+        <!-- Left Column: Step Number, Eyebrow, Title, Lead & Bullets -->
+        <div class="flex items-start gap-4 lg:w-7/12">
+            <div class="w-11 h-11 rounded-full bg-teal-500/20 text-teal-300 border border-teal-400/30 flex items-center justify-center font-bold text-[16px] shrink-0 shadow-lg tabular-nums">
+                @Step.StepNumberCode
+            </div>
+            <div class="flex flex-col">
+                <span class="text-[11px] font-bold text-[#46E5D1] tracking-wider uppercase mb-1.5 flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[15px]">@Step.MaterialIconName</span> @Step.LocationEyebrow
+                </span>
+                <h3 class="text-[20px] font-bold text-white mb-2.5">
+                    @Step.DisplayTitle
+                </h3>
+                <p class="text-[14px] leading-relaxed text-slate-200 mb-3">
+                    @Step.LeadDescription
+                </p>
+                <ul class="text-[13px] text-slate-200 space-y-2">
+                    @foreach (var bullet in Step.Bullets)
+                    {
+                        <li>
+                            • <strong class="text-white font-semibold">@bullet.HighlightLabel</strong> @bullet.DetailText
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Right Callout Box (Polymorphic by Step Subclass) -->
+        <div class="lg:w-5/12 @Step.GetCalloutContainerClasses() rounded-xl p-5 flex flex-col justify-between shadow-inner text-white">
+            <div>
+                <span class="text-[10px] font-bold uppercase tracking-widest @Step.GetCalloutEyebrowColorClass() block mb-1.5">
+                    @Step.CalloutEyebrow
+                </span>
+
+                @if (Step is StandardTipWalkthroughStep tipStep)
+                {
+                    <h4 class="@tipStep.CalloutTitleSizeClass font-bold text-white mb-2">@tipStep.CalloutTitle</h4>
+                    @for (int i = 0; i < tipStep.CalloutParagraphs.Count; i++)
+                    {
+                        var isLastParagraph = i == tipStep.CalloutParagraphs.Count - 1;
+                        <p class="text-[13px] leading-relaxed @(i == 0 ? "text-slate-200" : "text-slate-300") @(isLastParagraph ? "" : "mb-2")">
+                            @tipStep.CalloutParagraphs[i]
+                        </p>
+                    }
+                }
+                else if (Step is ChecklistWalkthroughStep checkStep)
+                {
+                    <h4 class="text-[16px] font-bold text-white mb-2">@checkStep.CalloutTitle</h4>
+                    <ul class="text-[13px] leading-relaxed text-slate-200 space-y-1.5">
+                        @foreach (var item in checkStep.ValidationItems)
+                        {
+                            <li><strong class="text-cyan-100">@item.HighlightLabel</strong> @item.DetailText</li>
+                        }
+                    </ul>
+                }
+                else if (Step is FeeHighlightWalkthroughStep feeStep)
+                {
+                    <div class="flex items-baseline gap-1.5 mb-2">
+                        <span class="text-[26px] font-bold tracking-tight text-amber-300">@feeStep.FeeRangeText</span>
+                        <span class="text-[13px] text-slate-300 font-normal">@feeStep.FeeUnitText</span>
+                    </div>
+                    <p class="text-[13px] leading-relaxed text-slate-200">
+                        @feeStep.FeeBodyText
+                    </p>
+                }
+            </div>
+
+            <span class="text-[11px] @Step.GetCalloutFooterColorClass() font-medium mt-4 block">
+                @Step.CalloutFooterNote
+            </span>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public WalkthroughStepBase? Step { get; set; }
+
+    [Parameter]
+    public bool IsHighlighted { get; set; }
+}
