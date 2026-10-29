@@ -1,0 +1,137 @@
+@page "/"
+@inject ITransitService TransitService
+@inject NavigationManager Navigation
+
+<PageTitle>Islandway — Philippine Ferry Transit Guide</PageTitle>
+
+<!-- 2. Hero & Route Finder Section -->
+<section class="relative w-full isolate flex flex-col justify-center min-h-[580px] px-6 sm:px-12 lg:px-[72px] py-[64px] overflow-hidden">
+    <!-- Hero Background Image -->
+    <img alt="Philippine Visayas island seascape"
+         class="absolute inset-0 w-full h-full object-cover object-center pointer-events-none -z-10"
+         src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOY963fGaYToG8ZNdqCsDalGTCz77_r8IJsmQTZk-tUa8Yp3tV7r6fR8KY7Z6q0z3D9HuDHJAxYxskzjXXDwsWNzAXOzOOlSqUbrQ7kXWFIxzmXdFxdY_V6J8V_AZqk3NR9H8Pif4P5ZR0Q6JGvVtsatwKYbDjCTCSqjg_uv9KcC0ltfoUVp_T6DhBB-7-RWGrPtehjXJ-qgQ-TxMxiPMIYKT-VFO14PTLDNAyUVUbdXCBC_zSoLLW4Q"
+         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1920&q=80';" />
+    
+    <!-- Dark Ocean Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-b from-[#06182a]/70 via-[#0A2540]/60 to-[#07253d] pointer-events-none -z-10"></div>
+
+    <!-- Centered Hero Headline & Badge -->
+    <div class="flex flex-col items-center text-center gap-[16px] max-w-[900px] mx-auto z-10 mb-[32px]">
+        <div class="flex items-center gap-[8px] px-[12px] py-[5px] rounded-full bg-white/10 backdrop-blur-md border border-white/20 shadow-sm">
+            <i class="fa-regular fa-compass text-[#65DFD0] text-[13px]"></i>
+            <span class="font-semibold text-[11px] leading-[13px] tracking-widest uppercase text-[#C3F5EF]">
+                Philippine Inter-Island Network
+            </span>
+        </div>
+        <h1 class="text-4xl md:text-[54px] font-bold leading-[110%] text-white tracking-tight drop-shadow-sm text-balance">
+            Visayas &amp; Beyond by Sea.
+        </h1>
+    </div>
+
+    <!-- Frosted Glass Route Finder Floating Bar -->
+    <div class="w-full max-w-[1100px] mx-auto flex flex-col gap-[14px] z-10">
+        <RouteFinderBar SearchQuery="CurrentSearchQuery"
+                        AvailablePorts="AvailablePorts"
+                        VesselPreferences="VesselPreferences"
+                        OnVesselPreferenceChanged="HandleVesselPreferenceChanged"
+                        OnSearchRequested="HandleRouteSearch" />
+    </div>
+</section>
+
+<!-- 3. Top Inter-Island Ferry Routes -->
+<section class="w-full px-6 sm:px-12 lg:px-[72px] pt-[40px] pb-[56px] flex flex-col gap-[24px]" id="routes">
+    <div class="flex flex-col md:flex-row md:items-end justify-between border-b border-white/10 pb-4 gap-4">
+        <div class="flex flex-col gap-[4px]">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#7FE0D3]">Marine Passages</span>
+            <h2 class="text-[32px] font-bold leading-[120%] text-white">Top Inter-Island Routes</h2>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3">
+            @if (VesselPreferences != null)
+            {
+                <div class="flex items-center gap-1.5 bg-white/5 backdrop-blur-md p-1 rounded-xl border border-white/15 text-xs">
+                    @foreach (var pref in VesselPreferences)
+                    {
+                        var isActive = string.Equals(CurrentSearchQuery.VesselPreference, pref, StringComparison.OrdinalIgnoreCase);
+                        <button type="button"
+                                @onclick="() => HandleVesselPreferenceChanged(pref)"
+                                class="px-3 py-1.5 rounded-lg transition-all duration-150 @(isActive ? "bg-[#00c9b4] text-[#071F36] font-bold shadow-sm" : "text-white/75 hover:text-white font-medium")">
+                            @pref
+                        </button>
+                    }
+                </div>
+            }
+
+            <a class="flex items-center gap-[8px] text-[14px] font-semibold text-[#7FE0D3] hover:text-[#a0ece2] transition-colors group ml-2" href="/routes">
+                <span>Browse all routes</span>
+                <i class="fa-solid fa-arrow-right text-[13px] group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Route Cards Grid -->
+    @if (FilteredRoutes != null && FilteredRoutes.Count > 0)
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-[24px] w-full">
+            @foreach (var route in FilteredRoutes)
+            {
+                <RouteCard Route="route" />
+            }
+        </div>
+    }
+</section>
+
+<!-- 4. Choose Your Vessel Type -->
+<section class="w-full px-6 sm:px-12 lg:px-[72px] py-[56px] flex flex-col gap-[28px] border-y border-white/10" id="vessels">
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div class="flex flex-col gap-[6px]">
+            <span class="text-[11px] font-bold uppercase tracking-wider text-[#7FE0D3]">Fleet Classification</span>
+            <h2 class="text-[32px] font-bold leading-[120%] text-white">Choose Your Vessel Type</h2>
+        </div>
+        <a href="/walkthrough" class="inline-flex items-center gap-2 text-sm font-semibold text-[#7FE0D3] hover:text-white transition-colors group">
+            <i class="fa-solid fa-compass-drafting text-xs"></i>
+            <span>First time sailing? Read the 5-step Pier Boarding Walkthrough</span>
+            <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition-transform"></i>
+        </a>
+    </div>
+
+    @if (VesselClasses != null)
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-[24px] w-full">
+            @foreach (var vessel in VesselClasses)
+            {
+                <VesselComparisonCard Vessel="vessel" />
+            }
+        </div>
+    }
+</section>
+
+@code {
+    private IReadOnlyList<FerryRouteBase>? TopRoutes { get; set; }
+    private IReadOnlyList<FerryVesselBase>? VesselClasses { get; set; }
+    private IReadOnlyList<string>? AvailablePorts { get; set; }
+    private IReadOnlyList<string>? VesselPreferences { get; set; }
+    private RouteSearchQuery CurrentSearchQuery { get; set; } = new();
+
+    private IReadOnlyList<FerryRouteBase> FilteredRoutes =>
+        TransitService.FilterRoutesByPreference(TopRoutes ?? [], CurrentSearchQuery.VesselPreference);
+
+    protected override async Task OnInitializedAsync()
+    {
+        TopRoutes = await TransitService.GetTopRoutesAsync();
+        VesselClasses = await TransitService.GetVesselClassesAsync();
+        AvailablePorts = TransitService.GetAvailablePorts();
+        VesselPreferences = TransitService.GetVesselPreferences();
+    }
+
+    private void HandleVesselPreferenceChanged(string preference)
+    {
+        CurrentSearchQuery.VesselPreference = preference;
+    }
+
+    private void HandleRouteSearch(RouteSearchQuery query)
+    {
+        var routeId = TransitService.ResolveRouteIdFromSearch(query);
+        Navigation.NavigateTo($"/routes/{routeId}");
+    }
+}

@@ -1,0 +1,37 @@
+@if (Route != null)
+{
+    <div class="backdrop-blur-xl bg-white/10 rounded-2xl border border-white/20 overflow-hidden flex flex-col group transition-all duration-300 relative h-[320px] shadow-[0_8px_32px_rgba(0,0,0,0.25)] hover:border-white/40 hover:shadow-[0_12px_40px_rgba(0,168,150,0.25)]">
+        <img alt="@Route.ImageAlt"
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+             src="@Route.ImageUrl"
+             onerror="this.onerror=null;this.src='https://www.gstatic.com/labs-code/stitch/stitch-placeholder-300x300.svg';" />
+
+        <span class="absolute top-[14px] left-[14px] bg-[#0A2540]/80 backdrop-blur-md border border-white/20 text-[#7FE0D3] text-[10px] font-bold px-[9px] py-[4px] rounded-full">
+            @Route.GetVesselBadgeText()
+        </span>
+
+        <div class="absolute inset-x-0 bottom-0 p-[16px] backdrop-blur-md bg-slate-900/60 border-t border-white/15 flex flex-col gap-[8px]">
+            <div class="flex items-center justify-between">
+                <h3 class="text-[18px] font-bold text-white truncate mr-2">@Route.DisplayTitle</h3>
+                <span class="text-[12px] font-medium text-[#BBCBD7] flex-shrink-0">
+                    <i class="fa-regular fa-clock text-[#7FE0D3] mr-1"></i>@Route.CrossingDuration
+                </span>
+            </div>
+            <div class="flex items-center justify-between">
+                <span class="bg-white/10 border border-white/20 text-[#7FE0D3] font-bold text-[12px] px-[8px] py-[3px] rounded-md tabular-nums">
+                    @Route.GetFormattedFareRange()
+                </span>
+                <a href="/routes/@Route.Id"
+                   aria-label="@($"View schedule for {Route.DisplayTitle}")"
+                   class="w-[30px] h-[30px] rounded-full bg-white/10 hover:bg-[#00c9b4] hover:text-[#071F36] text-white flex items-center justify-center transition-colors border border-white/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[11px]"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public FerryRouteBase? Route { get; set; }
+}

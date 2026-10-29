@@ -1,0 +1,231 @@
+<!-- Route Finder Floating Bar (Frosted Glass Container) -->
+<div class="w-full flex flex-col gap-[14px]" id="route-finder">
+    <!-- Elevated Glass Search Bar Container -->
+    <div class="w-full backdrop-blur-xl bg-white/15 rounded-2xl shadow-[0_16px_40px_rgba(0,0,0,0.25)] p-[12px] flex flex-col lg:flex-row items-center gap-[12px] border border-white/30">
+        <!-- Field 1: Departure Port -->
+        <div class="relative flex-1 w-full">
+            <button type="button" @onclick="ToggleDepartureDropdown" class="w-full flex items-center px-[16px] py-[8px] gap-[14px] hover:bg-white/10 rounded-xl cursor-pointer transition-colors border border-transparent text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+                <div class="w-[36px] h-[36px] rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center flex-shrink-0 text-[#7FE0D3]">
+                    <i class="fa-solid fa-location-dot text-[15px]"></i>
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                    <span class="text-[11px] font-semibold text-[#BBCBD7] uppercase tracking-wider">Departure</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[15px] font-semibold text-white truncate">@SearchQuery.DeparturePort</span>
+                        <i class="fa-solid fa-chevron-down text-[11px] text-[#BBCBD7] ml-2"></i>
+                    </div>
+                </div>
+            </button>
+            @if (OpenDropdown == "departure" && AvailablePorts != null)
+            {
+                <div class="absolute left-0 right-0 top-full mt-2 bg-[#071F36]/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl py-1.5 z-40 max-h-56 overflow-y-auto">
+                    @foreach (var port in AvailablePorts)
+                    {
+                        var isSameAsDest = string.Equals(port, SearchQuery.DestinationPort, StringComparison.OrdinalIgnoreCase);
+                        <button type="button"
+                                @onclick="() => SelectDeparturePort(port)"
+                                class="w-full text-left px-4 py-2 text-[13px] font-medium transition-colors flex items-center justify-between @(isSameAsDest ? "text-amber-300/80 hover:bg-amber-500/10" : "text-white hover:bg-white/10 hover:text-[#7FE0D3]")">
+                            <span>@port</span>
+                            @if (isSameAsDest)
+                            {
+                                <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-300">Destination</span>
+                            }
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Swap Ports Button -->
+        <button type="button" @onclick="HandleSwapPorts" aria-label="Swap origin and destination" class="w-[36px] h-[36px] rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-[#7FE0D3] hover:bg-white/20 transition-colors flex items-center justify-center flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]" title="Swap origin and destination">
+            <i class="fa-solid fa-arrow-right-arrow-left text-[12px]"></i>
+        </button>
+
+        <!-- Field 2: Destination Port -->
+        <div class="relative flex-1 w-full">
+            <button type="button" @onclick="ToggleDestinationDropdown" class="w-full flex items-center px-[16px] py-[8px] gap-[14px] hover:bg-white/10 rounded-xl cursor-pointer transition-colors border border-transparent text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+                <div class="w-[36px] h-[36px] rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center flex-shrink-0 text-[#7FE0D3]">
+                    <i class="fa-solid fa-map-pin text-[15px]"></i>
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                    <span class="text-[11px] font-semibold text-[#BBCBD7] uppercase tracking-wider">Destination</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[15px] font-semibold text-white truncate">@SearchQuery.DestinationPort</span>
+                        <i class="fa-solid fa-chevron-down text-[11px] text-[#BBCBD7] ml-2"></i>
+                    </div>
+                </div>
+            </button>
+            @if (OpenDropdown == "destination" && AvailablePorts != null)
+            {
+                <div class="absolute left-0 right-0 top-full mt-2 bg-[#071F36]/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl py-1.5 z-40 max-h-56 overflow-y-auto">
+                    @foreach (var port in AvailablePorts)
+                    {
+                        var isSameAsDep = string.Equals(port, SearchQuery.DeparturePort, StringComparison.OrdinalIgnoreCase);
+                        <button type="button"
+                                @onclick="() => SelectDestinationPort(port)"
+                                class="w-full text-left px-4 py-2 text-[13px] font-medium transition-colors flex items-center justify-between @(isSameAsDep ? "text-amber-300/80 hover:bg-amber-500/10" : "text-white hover:bg-white/10 hover:text-[#7FE0D3]")">
+                            <span>@port</span>
+                            @if (isSameAsDep)
+                            {
+                                <span class="text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-400/15 text-amber-300">Origin</span>
+                            }
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Divider -->
+        <div class="hidden lg:block w-[1px] h-[40px] bg-white/20"></div>
+
+        <!-- Field 3: Travel Vessel / Preference -->
+        <div class="relative flex-1 w-full">
+            <button type="button" @onclick="ToggleVesselDropdown" class="w-full flex items-center px-[16px] py-[8px] gap-[14px] hover:bg-white/10 rounded-xl cursor-pointer transition-colors border border-transparent text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+                <div class="w-[36px] h-[36px] rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center flex-shrink-0 text-[#7FE0D3]">
+                    <i class="fa-solid fa-ferry text-[15px]"></i>
+                </div>
+                <div class="flex flex-col flex-1 min-w-0">
+                    <span class="text-[11px] font-semibold text-[#BBCBD7] uppercase tracking-wider">Vessel Preference</span>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[15px] font-semibold text-white truncate">@SearchQuery.VesselPreference</span>
+                        <i class="fa-solid fa-chevron-down text-[11px] text-[#BBCBD7] ml-2"></i>
+                    </div>
+                </div>
+            </button>
+            @if (OpenDropdown == "vessel" && VesselPreferences != null)
+            {
+                <div class="absolute left-0 right-0 top-full mt-2 bg-[#071F36]/95 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl py-1.5 z-40">
+                    @foreach (var pref in VesselPreferences)
+                    {
+                        <button type="button" @onclick="() => SelectVesselPreference(pref)" class="w-full text-left px-4 py-2 text-[13px] font-medium text-white hover:bg-white/10 hover:text-[#7FE0D3] transition-colors">
+                            @pref
+                        </button>
+                    }
+                </div>
+            }
+        </div>
+
+        <!-- Action Button -->
+        <button type="button" @onclick="HandleSearchClick" class="h-[48px] px-[24px] bg-gradient-to-r from-[#00c9b4] to-[#00A896] hover:from-[#00b9a5] hover:to-[#007f71] transition-all duration-200 rounded-xl flex items-center justify-center gap-[8px] text-[#071F36] font-bold text-[14px] flex-shrink-0 shadow-[0_6px_20px_rgba(0,168,150,0.35)] border border-white/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#7FE0D3]">
+            <span>Search</span>
+            <i class="fa-solid fa-magnifying-glass text-[13px]"></i>
+        </button>
+    </div>
+
+    @if (!string.IsNullOrEmpty(ValidationErrorMessage))
+    {
+        <div role="alert" class="px-4 py-2.5 rounded-xl bg-amber-500/15 border border-amber-400/40 backdrop-blur-md text-amber-200 text-xs flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-triangle-exclamation text-amber-300"></i>
+                <span>@ValidationErrorMessage</span>
+            </div>
+            <button type="button" @onclick="ClearValidationError" class="text-amber-300 hover:text-white font-semibold text-xs">
+                Dismiss
+            </button>
+        </div>
+    }
+
+    <!-- Planning Reassurance & Notice -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between px-[10px] text-[12px] text-[#BBCBD7] gap-2">
+        <div class="flex items-center gap-[8px]">
+            <i class="fa-solid fa-route text-[#7FE0D3] text-[13px]"></i>
+            <span class="font-medium">48 active sea lanes across Visayas &amp; Luzon</span>
+        </div>
+        <div class="flex items-center gap-[6px]">
+            <i class="fa-regular fa-clock text-[#7FE0D3] text-[12px]"></i>
+            <span class="font-medium">Verified real-time schedules</span>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public RouteSearchQuery SearchQuery { get; set; } = new();
+
+    [Parameter]
+    public IReadOnlyList<string>? AvailablePorts { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<string>? VesselPreferences { get; set; }
+
+    [Parameter]
+    public EventCallback<RouteSearchQuery> OnSearchRequested { get; set; }
+
+    [Parameter]
+    public EventCallback<string> OnVesselPreferenceChanged { get; set; }
+
+    private string? OpenDropdown { get; set; }
+    private string? ValidationErrorMessage { get; set; }
+
+    private void ToggleDepartureDropdown() =>
+        OpenDropdown = OpenDropdown == "departure" ? null : "departure";
+
+    private void ToggleDestinationDropdown() =>
+        OpenDropdown = OpenDropdown == "destination" ? null : "destination";
+
+    private void ToggleVesselDropdown() =>
+        OpenDropdown = OpenDropdown == "vessel" ? null : "vessel";
+
+    private void SelectDeparturePort(string port)
+    {
+        if (string.Equals(port, SearchQuery.DestinationPort, StringComparison.OrdinalIgnoreCase))
+        {
+            ValidationErrorMessage = "Departure and destination ports cannot be identical. Please choose a different port or use the Swap button.";
+            OpenDropdown = null;
+            return;
+        }
+
+        ValidationErrorMessage = null;
+        SearchQuery.DeparturePort = port;
+        OpenDropdown = null;
+    }
+
+    private void SelectDestinationPort(string port)
+    {
+        if (string.Equals(port, SearchQuery.DeparturePort, StringComparison.OrdinalIgnoreCase))
+        {
+            ValidationErrorMessage = "Destination port cannot be the same as the departure port. Please choose a different island destination.";
+            OpenDropdown = null;
+            return;
+        }
+
+        ValidationErrorMessage = null;
+        SearchQuery.DestinationPort = port;
+        OpenDropdown = null;
+    }
+
+    private async Task SelectVesselPreference(string preference)
+    {
+        SearchQuery.VesselPreference = preference;
+        OpenDropdown = null;
+        if (OnVesselPreferenceChanged.HasDelegate)
+        {
+            await OnVesselPreferenceChanged.InvokeAsync(preference);
+        }
+    }
+
+    private void HandleSwapPorts()
+    {
+        OpenDropdown = null;
+        ValidationErrorMessage = null;
+        SearchQuery.SwapPorts();
+    }
+
+    private void ClearValidationError()
+    {
+        ValidationErrorMessage = null;
+    }
+
+    private async Task HandleSearchClick()
+    {
+        OpenDropdown = null;
+        if (!SearchQuery.TryValidate(out var error))
+        {
+            ValidationErrorMessage = error;
+            return;
+        }
+
+        ValidationErrorMessage = null;
+        await OnSearchRequested.InvokeAsync(SearchQuery);
+    }
+}
