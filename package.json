@@ -1,0 +1,15 @@
+{
+  "name": "midterm-app-dev-tailwind",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local Tailwind CSS build pipeline for Islandway Blazor Transit Guide",
+  "scripts": {
+    "build:css": "tailwindcss -i ./Styles/tailwind.input.css -o ./wwwroot/css/tailwind.output.css --minify",
+    "watch:css": "tailwindcss -i ./Styles/tailwind.input.css -o ./wwwroot/css/tailwind.output.css --watch"
+  },
+  "devDependencies": {
+    "@tailwindcss/container-queries": "^0.1.1",
+    "@tailwindcss/forms": "^0.5.10",
+    "tailwindcss": "^3.4.17"
+  }
+}
