@@ -1,0 +1,432 @@
+@page "/routes"
+@page "/routes/{RouteId}"
+@page "/cebu-bohol"
+@inject ITransitService TransitService
+@inject NavigationManager Navigation
+
+<PageTitle>@(Overview != null ? $"{Overview.DisplayTitle} Ferry Route Overview | Islandway" : "Ferry Route Overview | Islandway")</PageTitle>
+
+@if (Overview != null)
+{
+    <!-- ==================== IMMERSIVE MARITIME GLOWS ==================== -->
+    <div class="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div class="absolute -top-[10%] left-1/4 w-[70vw] h-[50vh] bg-gradient-to-b from-[#00F0D0]/15 via-[#0284C7]/10 to-transparent blur-3xl"></div>
+        <div class="absolute top-[40%] -right-[15%] w-[55vw] h-[55vw] rounded-full bg-[#00A896]/10 blur-[120px]"></div>
+        <div class="absolute bottom-[10%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-[#005260]/20 blur-[140px]"></div>
+    </div>
+
+    <!-- ==================== FULL-BLEED ROUTE HERO HEADER ==================== -->
+    <section class="w-full px-6 lg:px-12 pt-7 pb-6 border-b border-white/10 bg-white/5 backdrop-blur-md">
+        <!-- Breadcrumb & Corridor Switcher -->
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-5">
+            <nav aria-label="Breadcrumb" class="flex items-center gap-2 text-xs text-white/60">
+                <a class="hover:text-white transition-colors duration-150" href="/">Home</a>
+                <svg class="w-3 h-3 text-white/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <a class="hover:text-white transition-colors duration-150" href="/#routes">Sea Lanes</a>
+                <svg class="w-3 h-3 text-white/40" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+                <span class="text-[#00F0D0] font-medium">@Overview.BreadcrumbLabel</span>
+            </nav>
+
+            <!-- Corridor Switcher Bar -->
+            <div class="flex flex-wrap items-center gap-1.5" role="navigation" aria-label="Switch ferry corridor">
+                @foreach (var corridor in RouteCorridors)
+                {
+                    var isActiveCorridor = string.Equals(Overview.Id, corridor.RouteId, StringComparison.OrdinalIgnoreCase);
+                    <a href="/routes/@corridor.RouteId"
+                       class="px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-150 @(isActiveCorridor ? "bg-[#00F0D0] text-[#041C2C] font-bold shadow-[0_0_12px_rgba(0,240,208,0.3)]" : "bg-white/10 text-white/75 hover:bg-white/15 hover:text-white border border-white/15")">
+                        @corridor.ShortLabel
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Title & Status -->
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-5">
+            <div class="space-y-2">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[11px] font-bold text-[#00F0D0] bg-[#00F0D0]/10 border border-[#00F0D0]/30 backdrop-blur-sm tracking-wider uppercase">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#00F0D0] animate-pulse"></span>
+                    @Overview.CorridorLabel
+                </div>
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white drop-shadow-md text-balance">
+                    @Overview.OriginName <span class="text-[#00F0D0]/80">to</span> @Overview.DestinationName
+                </h1>
+            </div>
+
+            <!-- Glowing operational badge -->
+            <div class="flex flex-col items-start md:items-end gap-1.5">
+                <div class="px-4 py-2 bg-emerald-500/10 backdrop-blur-xl rounded-full flex items-center gap-2.5 border border-emerald-400/30 shadow-[0_0_20px_rgba(16,185,129,0.18)]">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-400"></span>
+                    </span>
+                    <span class="font-semibold text-xs text-emerald-300 tracking-wide">
+                        @Overview.OperationalStatusText
+                    </span>
+                </div>
+                <span class="text-[11px] text-white/50">@Overview.VerificationText</span>
+            </div>
+        </div>
+
+        <!-- Quick Route Chips -->
+        <div class="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white/90">
+                    <svg class="w-4 h-4 text-[#00F0D0]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span>Transit: <strong class="text-white font-semibold">@Overview.AvgTransitTime</strong></span>
+                </div>
+                <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white/90">
+                    <svg class="w-4 h-4 text-[#00F0D0]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span>Frequency: <strong class="text-white font-semibold">@Overview.DailyCrossingsText</strong></span>
+                </div>
+                <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-xs text-white/90">
+                    <svg class="w-4 h-4 text-[#00F0D0]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                    <span>@Overview.ServiceTypesText</span>
+                </div>
+            </div>
+
+            <!-- Direction Switch Button -->
+            <button type="button"
+                    @onclick="HandleReverseDirection"
+                    class="flex items-center gap-1.5 font-semibold text-xs text-[#00F0D0] hover:text-[#76F4E0] transition-colors group px-3.5 py-1.5 rounded-xl bg-[#00F0D0]/10 border border-[#00F0D0]/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00F0D0]">
+                <span>@Overview.ReverseSwitchLabel</span>
+                <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round"></path>
+                </svg>
+            </button>
+        </div>
+    </section>
+
+    <!-- ==================== FULL-BLEED MAIN CONTENT ==================== -->
+    <main class="w-full px-6 lg:px-12 py-8 space-y-10">
+        <!-- INTERACTIVE TRIP FARE & PRE-BOARDING ESTIMATOR DRAWER -->
+        @if (SelectedSailing != null && CurrentEstimate != null)
+        {
+            <div class="p-6 rounded-2xl bg-slate-900/80 border border-[#00F0D0]/40 backdrop-blur-xl shadow-[0_12px_40px_rgba(0,240,208,0.15)] space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/10 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-[#00F0D0]/15 border border-[#00F0D0]/30 flex items-center justify-center text-[#00F0D0]">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-[#00F0D0]">Interactive Trip Fare Estimator</span>
+                            <h3 class="text-lg font-bold text-white">
+                                @SelectedSailing.DisplayTitle — @SelectedSailing.DepartureTime24h Departure (@SelectedSailing.BerthRouteText)
+                            </h3>
+                        </div>
+                    </div>
+                    <button type="button"
+                            @onclick="ClearSelectedSailing"
+                            class="self-start sm:self-auto px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-xs font-semibold text-white/80 hover:text-white transition-colors">
+                        Close Estimator ✕
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                    <!-- Controls (7 Cols) -->
+                    <div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <!-- Sailing Date Input with Past-Date Guard -->
+                        <div class="p-3.5 rounded-xl bg-white/5 border border-white/15 flex flex-col gap-1.5">
+                            <label for="sailing-date-input" class="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+                                Sailing Date
+                            </label>
+                            <input id="sailing-date-input"
+                                   type="date"
+                                   min="@TodayIso"
+                                   max="@MaxFutureIso"
+                                   value="@BookingRequest.TravelDate.ToString("yyyy-MM-dd")"
+                                   @onchange="HandleTravelDateChanged"
+                                   class="bg-slate-900/90 border border-white/20 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-white focus:outline-none focus:border-[#00F0D0]" />
+                            <span class="text-[10px] text-white/50">Today to +6 months ahead</span>
+                        </div>
+
+                        <!-- Passenger Stepper with Non-Negative Clamping (1 to 10) -->
+                        <div class="p-3.5 rounded-xl bg-white/5 border border-white/15 flex flex-col gap-1.5">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+                                Passengers (1–10)
+                            </span>
+                            <div class="flex items-center justify-between bg-slate-900/90 border border-white/20 rounded-lg px-2 py-1">
+                                <button type="button"
+                                        @onclick="BookingRequest.DecrementPassengers"
+                                        disabled="@(BookingRequest.PassengerCount <= TripBookingRequest.MinPassengers)"
+                                        aria-label="Decrease passenger count"
+                                        class="w-7 h-7 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-sm flex items-center justify-center">
+                                    −
+                                </button>
+                                <span class="font-bold text-sm text-white tabular-nums">@BookingRequest.PassengerCount pax</span>
+                                <button type="button"
+                                        @onclick="BookingRequest.IncrementPassengers"
+                                        disabled="@(BookingRequest.PassengerCount >= TripBookingRequest.MaxPassengers)"
+                                        aria-label="Increase passenger count"
+                                        class="w-7 h-7 rounded-md bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed text-white font-bold text-sm flex items-center justify-center">
+                                    +
+                                </button>
+                            </div>
+                            <span class="text-[10px] text-white/50">Includes 15kg free baggage</span>
+                        </div>
+
+                        <!-- Statutory Discount Toggle -->
+                        <div class="p-3.5 rounded-xl bg-white/5 border border-white/15 flex flex-col justify-between gap-1.5">
+                            <span class="text-[11px] font-semibold uppercase tracking-wider text-white/60">
+                                Concession Tariff
+                            </span>
+                            <label class="flex items-center gap-2 cursor-pointer py-1">
+                                <input type="checkbox"
+                                       @bind="BookingRequest.ApplyStatutoryDiscount"
+                                       class="rounded border-white/30 bg-slate-900 text-[#00A896] focus:ring-[#00F0D0]" />
+                                <span class="text-xs font-semibold text-white">Student / Senior / PWD (-20%)</span>
+                            </label>
+                            <span class="text-[10px] text-white/50">Bring valid PH gov't/school ID</span>
+                        </div>
+                    </div>
+
+                    <!-- Breakdown Summary (5 Cols) -->
+                    <div class="lg:col-span-5 p-4 rounded-xl bg-white/5 border border-white/15 space-y-2.5 text-xs tabular-nums">
+                        <div class="flex justify-between text-white/80">
+                            <span>Ticket Fare (@CurrentEstimate.PassengerCount × ₱@CurrentEstimate.BaseFarePerPassenger.ToString("N0"))</span>
+                            <span class="font-semibold text-white">₱@CurrentEstimate.BaseSubtotalPhp.ToString("N0")</span>
+                        </div>
+                        @if (CurrentEstimate.DiscountAmountPhp > 0)
+                        {
+                            <div class="flex justify-between text-emerald-300">
+                                <span>20% Statutory Discount</span>
+                                <span class="font-semibold">−₱@CurrentEstimate.DiscountAmountPhp.ToString("N0")</span>
+                            </div>
+                        }
+                        <div class="flex justify-between text-white/80">
+                            <span>Mandatory Port Terminal Fee (₱@Overview.TerminalFeePhp.ToString("N0")/pax)</span>
+                            <span class="font-semibold text-white">₱@CurrentEstimate.TerminalFeeTotalPhp.ToString("N0")</span>
+                        </div>
+                        <div class="pt-2 border-t border-white/15 flex items-center justify-between">
+                            <div>
+                                <span class="block text-[10px] uppercase tracking-wider text-[#00F0D0] font-bold">Estimated Total (@CurrentEstimate.FormattedDate)</span>
+                                <span class="text-xl font-bold text-white">₱@CurrentEstimate.GrandTotalPhp.ToString("N0")</span>
+                            </div>
+                            <a href="/walkthrough"
+                               class="px-4 py-2 rounded-xl bg-gradient-to-r from-[#00A896] to-[#00F0D0] text-[#041C2C] font-bold text-xs shadow-md hover:brightness-110 transition-all">
+                                Boarding Guide →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(BookingRequest.LastValidationNotice))
+                {
+                    <div class="text-xs text-amber-300 flex items-center gap-2 pt-1">
+                        <i class="fa-solid fa-circle-info"></i>
+                        <span>@BookingRequest.LastValidationNotice</span>
+                    </div>
+                }
+            </div>
+        }
+
+        <!-- HERO EDITORIAL SHOWCASE + TIMETABLE GRID -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            <!-- Left: Visual Destination & Vessel Story (5 Cols) -->
+            <div class="lg:col-span-5 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 overflow-hidden flex flex-col justify-between shadow-[0_12px_40px_rgba(0,0,0,0.25)] hover:border-white/25 transition-all">
+                <!-- Full-Bleed Aerial Coastal Photo -->
+                <div class="relative h-[250px] sm:h-[300px] w-full overflow-hidden bg-slate-900/40">
+                    <img alt="@Overview.HeroImageAlt"
+                         class="w-full h-full object-cover"
+                         src="@Overview.HeroImageUrl"
+                         onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1518509562904-e7ef99cdcc86?auto=format&fit=crop&w=1000&q=80';" />
+                    <div class="absolute inset-0 bg-gradient-to-t from-[#041C2C] via-[#041C2C]/30 to-black/20"></div>
+                    <div class="absolute top-4 left-4 bg-black/40 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-[11px] font-bold text-[#00F0D0] tracking-wide uppercase">
+                        @Overview.HeroBadgeText
+                    </div>
+                    <div class="absolute bottom-4 left-4 right-4">
+                        <span class="text-[11px] font-semibold text-emerald-300 block mb-1">@Overview.HeroTerminalArrivalText</span>
+                        <h3 class="text-xl font-bold text-white leading-snug drop-shadow-sm">@Overview.HeroHeadline</h3>
+                    </div>
+                </div>
+
+                <!-- Glass overlay stats bar -->
+                <div class="p-5 space-y-4">
+                    <p class="text-xs text-white/75 leading-relaxed">
+                        @Overview.EditorialSummary
+                    </p>
+                    <div class="grid grid-cols-3 gap-2.5 text-center tabular-nums">
+                        <div class="p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/15">
+                            <span class="block text-[10px] text-white/60 font-semibold uppercase tracking-wider">Tourist Fare</span>
+                            <span class="text-base font-bold text-[#00F0D0]">@Overview.TouristFareRange</span>
+                        </div>
+                        <div class="p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/15">
+                            <span class="block text-[10px] text-white/60 font-semibold uppercase tracking-wider">First Trip</span>
+                            <span class="text-base font-bold text-white">@Overview.FirstFerryTime</span>
+                        </div>
+                        <div class="p-3 bg-white/10 backdrop-blur-md rounded-xl border border-white/15">
+                            <span class="block text-[10px] text-white/60 font-semibold uppercase tracking-wider">Last Trip</span>
+                            <span class="text-base font-bold text-white">@Overview.LastFerryTime</span>
+                        </div>
+                    </div>
+                    <div class="flex items-center justify-between text-xs text-white/70 px-1 pt-1 tabular-nums">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-[#00F0D0]"></span>
+                            Click any sailing to estimate total fare
+                        </span>
+                        <span class="text-white/50">Terminal fee: ₱@Overview.TerminalFeePhp.ToString("N0")</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Interactive Ferry Departures Timetable (7 Cols) -->
+            <div class="lg:col-span-7 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 p-6 flex flex-col justify-between shadow-[0_12px_40px_rgba(0,0,0,0.25)]" id="timetables">
+                <div>
+                    <!-- Header and Dynamic Operator Filter Pills -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/10">
+                        <div>
+                            <span class="text-[11px] font-bold text-[#00F0D0] uppercase tracking-wider">Live Departure Schedule</span>
+                            <h2 class="text-xl font-bold text-white mt-0.5">Today's Scheduled Sailings</h2>
+                        </div>
+                        <!-- Filter tabs -->
+                        <div class="flex flex-wrap items-center gap-1 bg-white/10 backdrop-blur-md p-1 rounded-xl border border-white/15 self-start sm:self-auto text-xs">
+                            @foreach (var tab in OperatorTabs)
+                            {
+                                var isTabActive = string.Equals(SelectedOperator, tab, StringComparison.OrdinalIgnoreCase);
+                                <button type="button"
+                                        @onclick="@(() => SelectOperatorFilter(tab))"
+                                        class="px-3 py-1 rounded-lg transition-all duration-150 @(isTabActive ? "font-bold bg-[#00F0D0] text-[#041C2C] shadow-sm" : "font-medium text-white/70 hover:text-white")">
+                                    @(tab == "All" ? $"All ({Overview.TotalDailyDepartures})" : tab)
+                                </button>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Schedule rows -->
+                    <div class="space-y-2.5 mt-4 text-sm">
+                        @foreach (var sailing in FilteredSailings)
+                        {
+                            <SailingScheduleRow Sailing="sailing" OnActionSelected="HandleSailingAction" />
+                        }
+                    </div>
+                </div>
+
+                <!-- Timetable Footer -->
+                <div class="pt-4 mt-3 border-t border-white/10 flex items-center justify-between text-xs text-white/60">
+                    <span>Showing @FilteredSailings.Count featured sailings of @Overview.TotalDailyDepartures daily departures</span>
+                    <button type="button"
+                            @onclick="@(() => SelectOperatorFilter("All"))"
+                            class="font-semibold text-[#00F0D0] hover:text-[#76F4E0] flex items-center gap-1 group">
+                        <span>Reset operator filter</span>
+                        <span class="transition-transform group-hover:translate-x-1">→</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- OPERATORS BREAKDOWN (Glass Cards) -->
+        <div class="space-y-4" id="operators">
+            <div>
+                <span class="text-[11px] font-bold text-[#00F0D0] uppercase tracking-wider">Fleet Operators</span>
+                <h2 class="text-2xl font-bold text-white mt-0.5">Carrier Services &amp; Fare Classes</h2>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                @foreach (var op in Overview.Operators)
+                {
+                    <OperatorCard Operator="op" />
+                }
+            </div>
+        </div>
+
+        <!-- TERMINAL EMBARKATION GUIDES (Full-Bleed Glass Grid) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6" id="terminals">
+            @foreach (var guide in Overview.TerminalGuides)
+            {
+                <TerminalGuideCard Guide="guide" />
+            }
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR (Prevents Stranded UX) -->
+        <div class="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <a href="/" class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 border border-white/15 text-xs font-semibold text-white transition-all">
+                <i class="fa-solid fa-arrow-left text-[#00F0D0]"></i>
+                <span>Back to Route Finder &amp; Home</span>
+            </a>
+            <a href="/walkthrough" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#00A896] to-[#00F0D0] text-[#041C2C] text-xs font-bold shadow-[0_0_20px_rgba(0,240,208,0.25)] hover:brightness-110 transition-all">
+                <span>Read 5-Step Pier Boarding Walkthrough</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </main>
+}
+
+@code {
+    [Parameter]
+    public string? RouteId { get; set; }
+
+    private RouteOverviewDetail? Overview { get; set; }
+    private IReadOnlyList<RouteCorridorOption> RouteCorridors { get; set; } = [];
+    private string SelectedOperator { get; set; } = "All";
+    private SailingScheduleBase? SelectedSailing { get; set; }
+    private TripBookingRequest BookingRequest { get; set; } = new();
+
+    private string TodayIso => DateOnly.FromDateTime(DateTime.Today).ToString("yyyy-MM-dd");
+    private string MaxFutureIso => DateOnly.FromDateTime(DateTime.Today.AddMonths(6)).ToString("yyyy-MM-dd");
+
+    private IReadOnlyList<string> OperatorTabs =>
+        TransitService.GetOperatorFilterTabs(Overview);
+
+    private IReadOnlyList<SailingScheduleBase> FilteredSailings =>
+        TransitService.FilterSailingsByOperator(Overview, SelectedOperator);
+
+    private FareEstimateResult? CurrentEstimate =>
+        SelectedSailing != null && Overview != null
+            ? TransitService.CalculateTripEstimate(SelectedSailing, BookingRequest, Overview.TerminalFeePhp)
+            : null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        RouteCorridors = TransitService.GetRouteCorridors();
+        await LoadRouteOverviewAsync();
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await LoadRouteOverviewAsync();
+    }
+
+    private async Task LoadRouteOverviewAsync()
+    {
+        var targetId = string.IsNullOrWhiteSpace(RouteId) ? "cebu-bohol" : RouteId;
+        Overview = await TransitService.GetRouteOverviewAsync(targetId);
+        SelectedOperator = "All";
+        SelectedSailing = null;
+    }
+
+    private void SelectOperatorFilter(string operatorFilter)
+    {
+        SelectedOperator = operatorFilter;
+    }
+
+    private void HandleReverseDirection()
+    {
+        Overview?.ToggleRouteDirection();
+    }
+
+    private void HandleSailingAction(SailingScheduleBase sailing)
+    {
+        SelectedSailing = sailing;
+    }
+
+    private void ClearSelectedSailing()
+    {
+        SelectedSailing = null;
+    }
+
+    private void HandleTravelDateChanged(ChangeEventArgs e)
+    {
+        if (DateOnly.TryParse(e.Value?.ToString(), out var parsedDate))
+        {
+            BookingRequest.TravelDate = parsedDate;
+        }
+    }
+}

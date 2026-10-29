@@ -1,0 +1,36 @@
+@if (Operator != null)
+{
+    <div class="bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 p-6 hover:border-[#00F0D0]/50 shadow-[0_8px_32px_rgba(0,0,0,0.2)] transition-all flex flex-col justify-between group">
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <span class="text-xs font-bold @Operator.GetBadgeThemeClasses() px-3 py-1 rounded-full">
+                    @Operator.OperatorBadgeName
+                </span>
+                <span class="text-xs text-white/60 tabular-nums">
+                    @Operator.DailyTripsText
+                </span>
+            </div>
+            <h4 class="font-bold text-lg text-white">@Operator.DisplayTitle</h4>
+            <p class="text-xs text-white/70 mt-1 mb-4 leading-relaxed">@Operator.Description</p>
+
+            <ul class="text-xs space-y-2.5 text-white/80 border-t border-white/10 pt-4">
+                @foreach (var highlight in Operator.Highlights)
+                {
+                    <li class="flex items-center gap-2">
+                        <span class="text-[#00F0D0] font-bold">✓</span> @highlight
+                    </li>
+                }
+            </ul>
+        </div>
+
+        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs tabular-nums">
+            <span class="font-semibold text-white">@Operator.StartingFareText</span>
+            <span class="font-bold @Operator.GetDurationThemeClass()">@Operator.DurationText</span>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public FerryOperatorBase? Operator { get; set; }
+}
